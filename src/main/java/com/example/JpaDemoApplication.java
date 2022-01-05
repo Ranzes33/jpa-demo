@@ -1,9 +1,10 @@
 package com.example;
 
 import com.example.model.Categoria;
+import com.example.model.Perfil;
+import com.example.model.Usuario;
 import com.example.model.Vacante;
-import com.example.repository.CategoriasRepository;
-import com.example.repository.VacantesRepository;
+import com.example.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -12,9 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @SpringBootApplication
@@ -26,13 +25,19 @@ public class JpaDemoApplication implements CommandLineRunner {
 	@Autowired
 	private VacantesRepository repoVacantes;
 
+	@Autowired
+	private PerfilesRepository repoPerfiles;
+
+	@Autowired
+	private UsuariosRepository repoUsuario;
+
 	public static void main(String[] args) {
 		SpringApplication.run(JpaDemoApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-		buscarVacantes();
+		buscarUsuario();
 	}
 	//metodos de crud repository
 	private void modificar(){
@@ -52,6 +57,7 @@ public class JpaDemoApplication implements CommandLineRunner {
 		else System.out.println("Cateooria no encontrada");
 	}
 	private void encontrarPorIds(){
+
 		List<Integer> ids = new LinkedList<Integer>();
 		ids.add(1);
 		ids.add(4);
@@ -127,7 +133,64 @@ public class JpaDemoApplication implements CommandLineRunner {
 	private void buscarVacantes(){
 		List<Vacante> lista = repoVacantes.findAll();
 		for (Vacante vacante: lista) {
-			System.out.println(vacante);
+			System.out.println(vacante.getId() + " " + vacante.getNombre() + "->" + vacante.getCategoria().getNombre());
 		}
 	}
+	private void guardarVacantes(){
+		Vacante vacante = new Vacante();
+		vacante.setNombre("Profesor de mat");
+	}
+
+	private void crearPerfilesAplicacion(){
+		repoPerfiles.saveAll(getPerfilesAplicacion());
+	}
+
+	private List<Perfil> getPerfilesAplicacion(){
+		List<Perfil> lista = new LinkedList<Perfil>();
+		Perfil per1 = new Perfil();
+		per1.setPerfil("SUPERVISOR");
+
+		Perfil per2 = new Perfil();
+		per2.setPerfil("ADMINISTRADOR");
+
+		Perfil per3 = new Perfil();
+		per3.setPerfil("USUARIO");
+
+		lista.add(per1);
+		lista.add(per2);
+		lista.add(per3);
+
+		return lista;
+	}
+
+	private void crearUsuarioConDosPerfiles(){
+		Usuario user = new Usuario();
+		user.setNombre("Bryan Chilque");
+		user.setEmail("ranzes33@gmail.com");
+		user.setFechaRegistro(new Date());
+		user.setUsername("Ranzes");
+		user.setPassword("3621");
+		user.setStatus(1);
+
+		Perfil per1 = new Perfil();
+		per1.setId(2);
+
+		Perfil per2 = new Perfil();
+		per2.setId(3);
+
+		user.agregar(per1);
+		user.agregar(per2);
+		repoUsuario.save(user);
+	}
+
+	public void buscarUsuario(){
+		Optional<Usuario> optional = repoUsuario.findById(50);
+		if (optional.isPresent()) {
+			Usuario us = optional.get();
+			System.out.println(us);
+			}
+		else{
+			System.out.println("Usuario no encontrado");
+		}
+		}
 }

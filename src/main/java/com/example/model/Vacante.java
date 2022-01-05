@@ -27,6 +27,8 @@ public class Vacante {
     private String imagen="no-imagen.jpg";
     private String status;
     private String detalles;
-    @Transient
+    //@Transient
+    @ManyToOne
+    @JoinColumn(name="idCategoria")
     private Categoria categoria;
 }
