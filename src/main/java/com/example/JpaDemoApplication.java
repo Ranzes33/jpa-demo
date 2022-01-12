@@ -37,7 +37,7 @@ public class JpaDemoApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		buscarUsuario();
+		buscarVacantesVariosPorStatus();
 	}
 	//metodos de crud repository
 	private void modificar(){
@@ -162,7 +162,6 @@ public class JpaDemoApplication implements CommandLineRunner {
 
 		return lista;
 	}
-
 	private void crearUsuarioConDosPerfiles(){
 		Usuario user = new Usuario();
 		user.setNombre("Bryan Chilque");
@@ -182,15 +181,35 @@ public class JpaDemoApplication implements CommandLineRunner {
 		user.agregar(per2);
 		repoUsuario.save(user);
 	}
-
 	public void buscarUsuario(){
 		Optional<Usuario> optional = repoUsuario.findById(50);
 		if (optional.isPresent()) {
 			Usuario us = optional.get();
 			System.out.println(us);
 			}
-		else{
-			System.out.println("Usuario no encontrado");
+		else System.out.println("Usuario no encontrado");
 		}
+
+	public void buscarVacantesPorDestacadoStatus(){
+		List<Vacante> list = repoVacantes.findByDestacadoAndStatusOrderByIdDesc(1, "Aprobada");
+		System.out.println("Registros encontrados: " + list.size());
+		for (Vacante v:list) System.out.println(v.getId() + " " + v.getNombre() + " " + v.getStatus() + " " + v.getDestacado());
+	}
+
+	public void buscarVacantesPorStatus(){
+		List<Vacante> lista = repoVacantes.findByStatus("Aprobada");
+		System.out.println("Registros encontrados: " + lista.size());
+		for (Vacante v: lista) System.out.println(v.getId() + " " + v.getNombre() + " " + v.getStatus());
 		}
+	public void buscarVacantesSalario(){
+		List<Vacante> lista = repoVacantes.findBySalarioBetweenOrderBySalarioDesc(7000,14000);
+		System.out.println("Registros encontrados: " + lista.size());
+		for (Vacante v: lista) System.out.println(v.getId() + " " + v.getNombre() + " :$/." + v.getSalario());
+	}
+	public void buscarVacantesVariosPorStatus(){
+		String[] status = new String[] {"Eliminada", "Creada"};
+		List<Vacante> lista = repoVacantes.findByStatusIn(status);
+		System.out.println("Registros encontrados: " + lista.size());
+		for (Vacante v: lista) System.out.println(v.getId() + " " + v.getNombre() + " " + v.getStatus());
+	}
 }
